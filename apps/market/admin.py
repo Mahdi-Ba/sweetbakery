@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 from django_json_widget.widgets import JSONEditorWidget
-
+from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from jsonfield import JSONField
 
 
@@ -10,15 +10,18 @@ from jsonfield import JSONField
 class SupplierAdmin(admin.ModelAdmin):
     list_display = [
         'user',
+        'mobile',
         'brand_name',
         'register_number',
         'address',
         'state',
     ]
-    search_fields = ['user__mobile', 'brand_name', 'register_number']
+    search_fields = ['user__mobile', 'brand_name', 'register_number','user__email']
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
+    def mobile(self,instance):
+        return instance.user.mobile
 
 
 @admin.register(ProductType)
@@ -54,7 +57,7 @@ class SpecificationAdmin(admin.ModelAdmin):
         'title',
         'unit',
     ]
-    search_fields = ['title']
+    search_fields = ['title','unit']
 
 
 class ProductSpecificationModel(admin.TabularInline):
@@ -78,6 +81,8 @@ class ProductAdmin(admin.ModelAdmin):
 
     list_display = [
         'supplier',
+        # 'mobile',
+        # 'email',
         'name',
         'part_number',
         'sub_category',
@@ -86,9 +91,18 @@ class ProductAdmin(admin.ModelAdmin):
     ]
     search_fields = [
         'supplier__brand_name',
+        'supplier__user__mobile',
+        'supplier__user__email',
         'name',
         'part_number'
     ]
+    list_filter = ['supplier','sub_category','prod_type','sub_category__category']
+
+    # def mobile(self,instance):
+    #     return instance.supplier.user.mobile
+    #
+    # def email(self,instance):
+    #     return instance.supplier.user.email
 
 
 class SubCategoryModel(admin.TabularInline):
@@ -109,36 +123,39 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = [
-        'user', 'product'
+        'user', 'product','mobile'
     ]
+    search_fields = ['user__mobile','user__email']
+    list_filter = ['product__sub_category','product__prod_type','product__supplier']
 
+    def mobile(self,instance):
+        return instance.user.mobile
 
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
     list_display = [
-        'user',
-        'rate',
-        'product',
-        'comment',
-        'recommend',
-        'disable',
-        'created_at',
+        'user', 'mobile','product','rate','recommend','disable','created_at'
     ]
-    search_fields = ['user__mobile', ]
+    search_fields = ['user__mobile','user__email']
+    list_filter = ['disable','product__sub_category','product__prod_type','product__supplier']
+
+    def mobile(self,instance):
+        return instance.user.mobile
+
+
 
 
 @admin.register(QuestionAndAnswer)
 class QuestionAndAnswerAdmin(admin.ModelAdmin):
     list_display = [
-        'product',
-        'user',
-        'question',
-        'answer',
-        'created_at',
-        'disable',
-
+        'user', 'mobile','product','disable','created_at'
     ]
-    search_fields = ['user__mobile', ]
+    search_fields = ['user__mobile','user__email']
+    list_filter = ['disable','product__sub_category','product__prod_type','product__supplier']
+
+    def mobile(self,instance):
+        return instance.user.mobile
+
 
 
 # @admin.register(Notification)
@@ -168,15 +185,23 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [InvoiceModel]
     list_display = [
         'user',
+        'mobile',
         'scheduling',
         'total_price',
         'is_succeed',
         'is_archive',
+        'created_at',
         'updated_at',
         'qr_number',
     ]
     search_fields = ['id','qr_number','user__email','user__mobile']
-    list_filter = ['created_at','is_archive']
+    list_filter = ['is_archive','is_succeed',
+                   'created_at',
+                   'scheduling__location__province',
+                   ['scheduling__deliver_date_time',DateTimeRangeFilter],
+                   ]
+    def mobile(self,instance):
+        return instance.user.mobile
 
 
 

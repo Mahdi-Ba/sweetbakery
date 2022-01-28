@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '86.104.39.210']
 BILLING = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'suit',
     # 'django.contrib.admin',
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'rangefilter',
     'apps.users',
     'apps.wallets',
     'apps.general',
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'silk',
 
 ]
+
 
 AUTH_USER_MODEL = 'users.User'
 SILKY_AUTHORISATION = True

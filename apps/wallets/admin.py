@@ -25,6 +25,7 @@ from .models import Wallet, Transaction
 #     def total(self,instance):
 #         return instance.freeze + instance.free
 #
+from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 
 
 @admin.register(Transaction)
@@ -40,7 +41,7 @@ class TransactionAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_filter = (
-        'created_at',
+        ('created_at',DateTimeRangeFilter),
     )
     date_hierarchy = 'created_at'
     autocomplete_fields = ['order']
