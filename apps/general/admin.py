@@ -30,11 +30,16 @@ class LocationAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
 
+from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 
 @admin.register(Scheduling)
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ['deliver_date_time', 'location']
+    list_display = ['deliver_date_time', 'location','is_enable']
+    list_editable = ['is_enable']
     search_fields = ['location__title']
+    list_filter = (
+        ('deliver_date_time',DateTimeRangeFilter),'location__province','is_enable'
+    )
 
 
 

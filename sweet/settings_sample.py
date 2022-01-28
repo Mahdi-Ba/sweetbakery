@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '86.104.39.210']
 BILLING = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'suit',
     # 'django.contrib.admin',
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'rangefilter',
     'apps.users',
     'apps.wallets',
     'apps.general',
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django_pgviews',
     'django_json_widget',
     'silk',
+    'import_export',
 
 ]
 
@@ -206,3 +207,7 @@ CACHES = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600
+
+
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
