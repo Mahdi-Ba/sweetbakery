@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
 ]
 
+
 AUTH_USER_MODEL = 'users.User'
 SILKY_AUTHORISATION = True
 
