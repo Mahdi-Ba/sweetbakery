@@ -212,3 +212,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+
+
+import os
+directory = "./media/qr_code"
+if not os.path.exists(directory):
+    os.makedirs(directory)

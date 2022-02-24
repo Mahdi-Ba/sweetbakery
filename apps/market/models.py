@@ -208,3 +208,34 @@ class ProductTracking(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, null=True, on_delete=models.CASCADE)
     track_location = jsonfield.JSONField()
+
+
+
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+import qrcode
+
+
+@receiver(post_save, sender=Order)
+def save_qr_code(sender, instance, **kwargs):
+    qr = qrcode.QRCode(
+            version=1,
+            box_size=10,
+            border=5)
+    qr.add_data(instance.qr_number)
+    qr.make(fit=True)
+    img = qr.make_image(fill='white', back_color=(169, 127, 55))
+    img.save(f'media/qr_code/{instance.qr_number}.png')
+
+import os
+
+
+
+def _delete_file(path):
+   if os.path.isfile(path):
+       os.remove(path)
+
+@receiver(post_delete, sender=Order)
+def delete_file(sender, instance, *args, **kwargs):
+    if instance.qr_number:
+        _delete_file(f'media/qr_code/{instance.qr_number}.png')
