@@ -1,0 +1,30 @@
+{% extends "mail_templated/base.html" %}
+
+{% block subject %}
+خرید محصول
+{% endblock %}
+
+{% block html %}
+    <img src="toranjestan.com/media/qr_code/{{order.qr_number}}.png" alt="">
+    <p>time : {{ order.scheduling.deliver_date_time }}</p>
+    <p>address : {{ order.scheduling.location.address }}</p>
+    <p>price : {{ order.total_price}}</p>
+    <table border="1">
+    <thead>
+        <td>product name</td>
+        <td>quantity</td>
+        <td>price</td>
+    </thead>
+    {% for item in invoice %}
+        <tr>
+            <td>{{ item.product.name}}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    عزیز، سلام خرسندیم که با شما همراه هستیم،<br>
+
+{% endblock %}
+

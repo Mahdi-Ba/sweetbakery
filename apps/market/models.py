@@ -1,10 +1,12 @@
 import uuid
-
 from django.db import models
 import jsonfield
 from apps.file.models import File
 from apps.general.models import Scheduling
 from apps.users.models import User
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+import qrcode
 
 
 class State(models.IntegerChoices):
@@ -28,9 +30,6 @@ class Supplier(models.Model):
         if self.brand_name is None:
             return 'No Name'
         return self.brand_name
-
-
-
 
 
 class ProductType(models.Model):
@@ -66,7 +65,6 @@ class Specification(models.Model):
         return self.title
 
 
-
 class Product(models.Model):
     supplier = models.ForeignKey(Supplier, null=True, on_delete=models.CASCADE)
     thumbnail = models.ImageField(null=True, blank=True, upload_to='product/thumbnail/')
@@ -83,8 +81,8 @@ class Product(models.Model):
     extra_discount_percent = models.FloatField(blank=True, null=True, default=0)
     extra_discount_price = models.IntegerField(null=True)
     description = models.TextField(max_length=1024)
-    video = models.ForeignKey(File, on_delete=models.SET_NULL, null=True, related_name="product_video",blank=True)
-    catalog = models.ForeignKey(File, on_delete=models.SET_NULL, null=True, related_name="catalog",blank=True)
+    video = models.ForeignKey(File, on_delete=models.SET_NULL, null=True, related_name="product_video", blank=True)
+    catalog = models.ForeignKey(File, on_delete=models.SET_NULL, null=True, related_name="catalog", blank=True)
     created_at = models.DateTimeField(auto_now_add=True, auto_now=False, null=True)
     slider = models.BooleanField(default=False)
 
@@ -152,7 +150,7 @@ class NotificationDescription(models.Model):
 class Notification(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     notification_description = models.ForeignKey(NotificationDescription, on_delete=models.SET_NULL, null=True,
-                                                default=None)
+                                                 default=None)
     link = models.URLField(default=None)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -169,7 +167,7 @@ class OrderStatus(models.IntegerChoices):
 class Order(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     scheduling = models.ForeignKey(Scheduling, null=True, on_delete=models.CASCADE)
-    qr_number = models.UUIDField(default=uuid.uuid4,editable=False)
+    qr_number = models.UUIDField(default=uuid.uuid4, editable=False)
     total_price = models.FloatField()
     products = models.ManyToManyField(Product, through='Invoice')
     is_succeed = models.BooleanField(default=False)
@@ -179,7 +177,6 @@ class Order(models.Model):
     state = models.IntegerField(choices=OrderStatus.choices, default=OrderStatus.ORDER)
     created_at = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated_at = models.DateTimeField(auto_now_add=False, auto_now=True)
-
 
     def __str__(self):
         return str(self.id)
@@ -210,30 +207,26 @@ class ProductTracking(models.Model):
     track_location = jsonfield.JSONField()
 
 
-
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
-import qrcode
-
-
 @receiver(post_save, sender=Order)
 def save_qr_code(sender, instance, **kwargs):
     qr = qrcode.QRCode(
-            version=1,
-            box_size=10,
-            border=5)
+        version=1,
+        box_size=10,
+        border=5)
     qr.add_data(instance.qr_number)
     qr.make(fit=True)
     img = qr.make_image(fill='white', back_color=(169, 127, 55))
     img.save(f'media/qr_code/{instance.qr_number}.png')
 
+
+
 import os
 
 
-
 def _delete_file(path):
-   if os.path.isfile(path):
-       os.remove(path)
+    if os.path.isfile(path):
+        os.remove(path)
+
 
 @receiver(post_delete, sender=Order)
 def delete_file(sender, instance, *args, **kwargs):

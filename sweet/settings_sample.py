@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django_json_widget',
     'silk',
     'import_export',
+    'mail_templated'
 
 ]
 
@@ -163,6 +164,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
+EMAIL_HOST = '154.53.53.139'
+EMAIL_PORT = '587'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sales@toranjestan.com'
+EMAIL_HOST_PASSWORD = 'c6X%8FyFZB'
 
 STATIC_URL = '/static/'
 

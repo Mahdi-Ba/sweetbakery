@@ -1,15 +1,10 @@
 from decimal import Decimal
-
 from django.db.models import Q
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
-# Create your views here.
-
 from rest_framework.permissions import AllowAny
-
 from sweet.pagination import PaginationHandlerMixin, BasicPagination
 from sweet.settings import BASE_URL
 from .serializer import *
@@ -17,6 +12,7 @@ from ..models import *
 from ...users.api.trait import imageConvertor
 from ...wallets.api.serializer import TransactionSerializer, WithdrawSerializer, TransactionResponse, DepositSerializer
 from ...wallets.models import Wallet, Transaction, TransactionType
+from mail_templated import send_mail
 
 
 class MySupplier(APIView):
@@ -901,6 +897,12 @@ class OrderList(APIView, PaginationHandlerMixin):
                 invoice_serializer = InvoiceRequestCreateSerializer(data=request.data['invoice'], many=True)
                 invoice_serializer.is_valid()
                 invoice = invoice_serializer.save(order=order)
+                sender = 'sales@toranjestan.com'
+                # TODO change receiver baharimahdi and change templat
+                send_mail('mail_templated/{}'.format('rebuild_hourly.html'), {'order': order, 'invoice': invoice},
+                          sender,
+                          ['baharimahdi93@gmail.com'])
+
                 # Notification.objects.create(
                 #     user=invoice[0].product.supplier.user,
                 #     notification_description=NotificationDescription.objects.get(
