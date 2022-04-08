@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block html %}
-    <img src="toranjestan.com/media/qr_code/{{order.qr_number}}.png" alt="">
+    <img src="http://toranjestan.com/media/qr_code/{{order.qr_number}}.png" alt="">
     <p>time : {{ order.scheduling.deliver_date_time }}</p>
     <p>address : {{ order.scheduling.location.address }}</p>
     <p>price : {{ order.total_price}}</p>
