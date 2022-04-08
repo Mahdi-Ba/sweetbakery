@@ -8,6 +8,8 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 import qrcode
 
+from sweet.settings import directory
+
 
 class State(models.IntegerChoices):
     accepted = 0, 'accepted'
@@ -217,7 +219,7 @@ def save_qr_code(sender, instance, **kwargs):
     qr.add_data(instance.qr_number)
     qr.make(fit=True)
     img = qr.make_image(fill='white', back_color=(169, 127, 55))
-    img.save(f'media/qr_code/{instance.qr_number}.png')
+    img.save(f'{directory}/{instance.qr_number}.png')
 
 
 
@@ -232,4 +234,4 @@ def _delete_file(path):
 @receiver(post_delete, sender=Order)
 def delete_file(sender, instance, *args, **kwargs):
     if instance.qr_number:
-        _delete_file(f'media/qr_code/{instance.qr_number}.png')
+        _delete_file(f'{directory}/{instance.qr_number}.png')
