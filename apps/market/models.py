@@ -41,6 +41,7 @@ class ProductType(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+    thumbnail = models.ImageField(null=True, blank=True, upload_to='category/thumbnail/')
 
     def __str__(self):
         return self.name
