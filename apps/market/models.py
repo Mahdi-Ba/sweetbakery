@@ -219,7 +219,7 @@ def save_qr_code(sender, instance, **kwargs):
     # qr.add_data(instance.qr_number)
     qr.add_data(f'http://toranjestan.com/order-info?q={instance.qr_number}')
     qr.make(fit=True)
-    img = qr.make_image(fill='white', back_color=(169, 127, 55))
+    img = qr.make_image(fill='white')
     img.save(f'{directory}/{instance.qr_number}.png')
 
 
