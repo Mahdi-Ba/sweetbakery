@@ -130,7 +130,7 @@ class QuestionAndAnswerReplySerializer(serializers.ModelSerializer):
 
 
 class AskQuestionSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.full_name')
+    user = serializers.ReadOnlyField(source='user.first_name')
 
     class Meta:
         model = QuestionAndAnswer
