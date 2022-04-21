@@ -13,10 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=200, required=False)
     email = serializers.EmailField(required=False)
     avatar = serializers.ImageField(required=False, allow_null=True)
+    is_staff = serializers.ReadOnlyField()
 
     class Meta:
         model = User
-        fields = ['mobile', 'phone_number', 'first_name', 'last_name', 'email', 'avatar', 'password']
+        fields = ['mobile', 'phone_number', 'first_name', 'last_name', 'email', 'avatar', 'password','is_staff']
 
     def validate_email(self, value):
         if User.objects.filter(Q(email__exact=value) & ~Q(mobile=self.initial_data['mobile'])).count() > 0:

@@ -1011,12 +1011,39 @@ class GetOrder(APIView):
         serializer = OrderDetailSerializer(order, many=False)
         return Response({'success': True, 'data': serializer.data, 'message': ''})
 
+    def put(self,request,pk):
+        if not request.user.is_staff:
+            return Response(
+                {'success': False, 'message': 'User FORBIDDEN',
+                 'dev_message': 'User FORBIDDEN',
+                 }, status.HTTP_403_FORBIDDEN)
+        else:
+            order = Order.objects.filter(id=pk).last()
+            order.state = request.data['state']
+            order.save()
+            serializer = OrderDetailSerializer(order, many=False)
+            return Response({'success': True, 'data': serializer.data, 'message': ''})
+
+
 @permission_classes((AllowAny,))
 class GetOrderQr(APIView):
     def get(self, request, pk):
         order = Order.objects.filter(qr_number=pk).last()
         serializer = OrderDetailSerializer(order, many=False)
         return Response({'success': True, 'data': serializer.data, 'message': ''})
+
+    def put(self,request,pk):
+        if not request.user.is_staff:
+            return Response(
+                {'success': False, 'message': 'User FORBIDDEN',
+                 'dev_message': 'User FORBIDDEN',
+                 }, status.HTTP_403_FORBIDDEN)
+        else:
+            order = Order.objects.filter(qr_number=pk).last()
+            order.state = request.data['state']
+            order.save()
+            serializer = OrderDetailSerializer(order, many=False)
+            return Response({'success': True, 'data': serializer.data, 'message': ''})
 
 
 class Deposit(APIView):
