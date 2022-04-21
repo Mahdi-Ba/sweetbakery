@@ -899,9 +899,8 @@ class OrderList(APIView, PaginationHandlerMixin):
                 invoice = invoice_serializer.save(order=order)
                 sender = 'sales@toranjestan.com'
                 # TODO change receiver baharimahdi and change templat
-                send_mail('mail_templated/{}'.format('rebuild_hourly.html'), {'order': order, 'invoice': invoice},
-                          sender,
-                          ['baharimahdi93@gmail.com'])
+                send_mail('mail_templated/{}'.format('purchase.html'), {'order': order, 'invoice': invoice},
+                          sender,[order.user.email])
 
                 # Notification.objects.create(
                 #     user=invoice[0].product.supplier.user,
