@@ -85,7 +85,7 @@ class ProductSupplierCreateSerializer(serializers.ModelSerializer):
 
 
 class QuestionAndAnswerShowSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.full_name')
+    user = serializers.ReadOnlyField(source='user.first_name')
 
     class Meta:
         model = QuestionAndAnswer
@@ -93,7 +93,7 @@ class QuestionAndAnswerShowSerializer(serializers.ModelSerializer):
 
 
 class RatingShowSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.full_name')
+    user = serializers.ReadOnlyField(source='user.first_name')
 
     class Meta:
         model = Rating
@@ -101,7 +101,7 @@ class RatingShowSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.full_name')
+    user = serializers.ReadOnlyField(source='user.first_name')
 
     class Meta:
         model = Favorite
@@ -109,7 +109,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.full_name')
+    user = serializers.ReadOnlyField(source='user.first_name')
     rate = serializers.FloatField(min_value=0, max_value=5)
 
     class Meta:
