@@ -30,6 +30,7 @@ class Location(models.Model):
 
 class Scheduling(models.Model):
     deliver_date_time = models.DateTimeField()
+    deliver_end_date_time = models.DateTimeField()
     location = models.ForeignKey(Location, null=True, on_delete=models.SET_NULL)
     is_enable = models.BooleanField(default=True)
 
