@@ -261,6 +261,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     is_locked = serializers.ReadOnlyField()
     qr_number = serializers.ReadOnlyField()
     state = serializers.IntegerField()
+    custom_address =  serializers.CharField(max_length=300, blank=True, default='')
     state_name = serializers.CharField(source='get_state_display')
 
     class Meta:
@@ -270,6 +271,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             'user',
             'scheduling',
             'total_price',
+            'custom_address',
             'products',
             'is_succeed',
             'is_archive',

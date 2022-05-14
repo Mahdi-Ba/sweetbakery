@@ -898,7 +898,6 @@ class OrderList(APIView, PaginationHandlerMixin):
                 invoice_serializer.is_valid()
                 invoice = invoice_serializer.save(order=order)
                 sender = 'sales@toranjestan.com'
-                # TODO change receiver baharimahdi and change templat
                 send_mail('mail_templated/{}'.format('purchase.html'), {'order': order, 'invoice': invoice},
                           sender,[order.user.email])
 
