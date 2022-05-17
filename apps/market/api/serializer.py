@@ -42,7 +42,6 @@ class BrandSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class ProductTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductType
@@ -50,7 +49,8 @@ class ProductTypeSerializer(serializers.ModelSerializer):
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
-    category_title = serializers.CharField(read_only=True,source='category.name')
+    category_title = serializers.CharField(read_only=True, source='category.name')
+
     class Meta:
         model = SubCategory
         fields = '__all__'
@@ -160,8 +160,9 @@ class ProductSupplierShowSerializer(serializers.ModelSerializer):
 
 
 class ProductSpecificationCreateSerializer(serializers.ModelSerializer):
-    specification_title = serializers.CharField(read_only=True,source='specification.title')
-    specification_unit = serializers.CharField(read_only=True,source='specification.unit')
+    specification_title = serializers.CharField(read_only=True, source='specification.title')
+    specification_unit = serializers.CharField(read_only=True, source='specification.unit')
+
     class Meta:
         model = ProductSpecification
         fields = '__all__'
@@ -229,13 +230,13 @@ class ProductSupplierDetailSerializer(serializers.ModelSerializer):
         return {'avg':
                     Rating.objects.filter(product_id=obj.id, disable=False).all().aggregate(Avg('rate'))['rate__avg']}
 
-    def get_is_like(self,obj):
-        user = self.context.get('user',None)
+    def get_is_like(self, obj):
+        user = self.context.get('user', None)
         if user is None:
             return False
         if obj.id is None or obj.id == '':
             return False
-        return Favorite.objects.filter(user__mobile=user,product_id=obj.id).exists()
+        return Favorite.objects.filter(user__mobile=user, product_id=obj.id).exists()
 
 
 class InvoiceSerilizer(serializers.ModelSerializer):
@@ -277,9 +278,28 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             'is_archive',
             'is_locked',
             'updated_at',
-            'state', 'state_name','qr_number'
+            'state', 'state_name', 'qr_number'
 
         ]
+
+
+class CardInformationSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+    card_number = serializers.CharField(required=True)
+    expiration_date = serializers.CharField(required=True)
+    card_code = serializers.CharField(required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    company = serializers.CharField(required=True)
+    address = serializers.CharField(required=True)
+    city = serializers.CharField(required=True)
+    state = serializers.CharField(required=True)
+    zip = serializers.CharField(required=True)
+    country = serializers.CharField(required=True)
 
 
 class OrderRequestSerializer(serializers.ModelSerializer):
