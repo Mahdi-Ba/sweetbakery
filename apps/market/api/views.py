@@ -846,8 +846,8 @@ class OrderList(APIView, PaginationHandlerMixin):
 
     def charge_credit_card(self, invoice, products, amount, email):
         merchantAuth = apicontractsv1.merchantAuthenticationType()
-        # merchantAuth.name = "CONSTANTS.apiLoginId"
-        # merchantAuth.transactionKey = "CONSTANTS.transactionKey"
+        merchantAuth.name = "37GC5hyR6"
+        merchantAuth.transactionKey = "25LR5gej6Xx9V2Pn"
         creditCard = apicontractsv1.creditCardType()
         creditCard.cardNumber = invoice.get("card_number")
         creditCard.expirationDate = invoice.get("expiration_date")
@@ -860,7 +860,7 @@ class OrderList(APIView, PaginationHandlerMixin):
         # Create order information
         order = apicontractsv1.orderType()
         order.invoiceNumber = "10101"
-        order.description = "Golf Shirts"
+        order.description = "Sweet Bakery"
 
         # Set the customer's Bill To address
         customerAddress = apicontractsv1.customerAddressType()
