@@ -887,25 +887,25 @@ class OrderList(APIView, PaginationHandlerMixin):
         # settings.setting.append(duplicateWindowSetting)
 
         # setup individual line items
-        line_items = apicontractsv1.ArrayOfLineItem()
-        for item in products:
-            line_item = apicontractsv1.lineItemType()
-            line_item.itemId = item.get('product').id
-            line_item.name = item.get('product').name
-            line_item.description = item.get('product').description
-            line_item.quantity = item.get('quantity')
-            line_item.unitPrice = item.get('price')
-            line_items.lineItem.append(line_item)
+        # line_items = apicontractsv1.ArrayOfLineItem()
+        # for item in products:
+        #     line_item = apicontractsv1.lineItemType()
+            # line_item.itemId = item.get('product').id
+            # line_item.name = item.get('product').name
+            # line_item.description = item.get('product').description
+            # line_item.quantity = item.get('quantity')
+            # line_item.unitPrice = item.get('price')
+            # line_items.lineItem.append(line_item)
         # Create a transactionRequestType object and add the previous objects to it.
         transactionrequest = apicontractsv1.transactionRequestType()
         transactionrequest.transactionType = "authCaptureTransaction"
         transactionrequest.amount = amount
-        transactionrequest.payment = payment
-        transactionrequest.order = order
-        transactionrequest.billTo = customerAddress
-        transactionrequest.customer = customerData
+        # transactionrequest.payment = payment
+        # transactionrequest.order = order
+        # transactionrequest.billTo = customerAddress
+        # transactionrequest.customer = customerData
         # transactionrequest.transactionSettings = settings
-        transactionrequest.lineItems = line_items
+        # transactionrequest.lineItems = line_items
 
         # Assemble the complete transaction request
         createtransactionrequest = apicontractsv1.createTransactionRequest()
