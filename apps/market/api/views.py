@@ -13,6 +13,8 @@ from ...users.api.trait import imageConvertor
 from ...wallets.api.serializer import TransactionSerializer, WithdrawSerializer, TransactionResponse, DepositSerializer
 from ...wallets.models import Wallet, Transaction, TransactionType
 from mail_templated import send_mail
+from authorizenet import apicontractsv1
+from authorizenet.apicontrollers import createTransactionController
 
 
 class MySupplier(APIView):
@@ -126,9 +128,6 @@ class BrandList(APIView, PaginationHandlerMixin):
                 BrandSerializer(self.paginate_queryset(brand.all()), many=True).data).data
         },
             status=status.HTTP_200_OK)
-
-
-
 
 
 @permission_classes((AllowAny,))
@@ -484,7 +483,7 @@ class ProductRating(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
 
     def get(self, request, pk):
-        rating = Rating.objects.filter(product_id=pk,disable=False)
+        rating = Rating.objects.filter(product_id=pk, disable=False)
         and_condition = Q()
         for key, value in request.GET.items():
             if key == 'sort' or key == 'page':
@@ -545,7 +544,7 @@ class ProductQuestion(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
 
     def get(self, request, pk):
-        question = QuestionAndAnswer.objects.filter(product_id=pk,disable=False)
+        question = QuestionAndAnswer.objects.filter(product_id=pk, disable=False)
         and_condition = Q()
         for key, value in request.GET.items():
             if key == 'sort' or key == 'page':
@@ -845,6 +844,135 @@ class InvoicePerforma(APIView, PaginationHandlerMixin):
 class OrderList(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
 
+    def charge_credit_card(self, invoice, products, amount, email):
+        merchantAuth = apicontractsv1.merchantAuthenticationType()
+        merchantAuth.name = "37GC5hyR6"
+        merchantAuth.transactionKey = "25LR5gej6Xx9V2Pn"
+        creditCard = apicontractsv1.creditCardType()
+        creditCard.cardNumber = invoice.get("card_number")
+        creditCard.expirationDate = invoice.get("expiration_date")
+        creditCard.cardCode = invoice.get("card_code")
+
+        # Add the payment data to a paymentType object
+        payment = apicontractsv1.paymentType()
+        payment.creditCard = creditCard
+
+        # Create order information
+        order = apicontractsv1.orderType()
+        order.invoiceNumber = "10101"
+        order.description = "Sweet Bakery"
+
+        # Set the customer's Bill To address
+        customerAddress = apicontractsv1.customerAddressType()
+        customerAddress.firstName = invoice.get("first_name")
+        customerAddress.lastName = invoice.get("last_name")
+        customerAddress.company = invoice.get("company")
+        customerAddress.address = invoice.get("address")
+        customerAddress.city = invoice.get("city")
+        customerAddress.state = invoice.get("state")
+        customerAddress.zip = invoice.get("zip")
+        customerAddress.country = invoice.get("country")
+
+        # Set the customer's identifying information
+        customerData = apicontractsv1.customerDataType()
+        customerData.type = "individual"
+        customerData.id = "99999456654"
+        customerData.email = email
+
+        # Add values for transaction settings
+        # duplicateWindowSetting = apicontractsv1.settingType()
+        # duplicateWindowSetting.settingName = "duplicateWindow"
+        # duplicateWindowSetting.settingValue = "600"
+        # settings = apicontractsv1.ArrayOfSetting()
+        # settings.setting.append(duplicateWindowSetting)
+
+        # setup individual line items
+        # line_items = apicontractsv1.ArrayOfLineItem()
+        # for item in products:
+        #     line_item = apicontractsv1.lineItemType()
+            # line_item.itemId = item.get('product').id
+            # line_item.name = item.get('product').name
+            # line_item.description = item.get('product').description
+            # line_item.quantity = item.get('quantity')
+            # line_item.unitPrice = item.get('price')
+            # line_items.lineItem.append(line_item)
+        # Create a transactionRequestType object and add the previous objects to it.
+        transactionrequest = apicontractsv1.transactionRequestType()
+        transactionrequest.transactionType = "authCaptureTransaction"
+        transactionrequest.amount = amount
+        # transactionrequest.payment = payment
+        # transactionrequest.order = order
+        # transactionrequest.billTo = customerAddress
+        # transactionrequest.customer = customerData
+        # transactionrequest.transactionSettings = settings
+        # transactionrequest.lineItems = line_items
+
+        # Assemble the complete transaction request
+        createtransactionrequest = apicontractsv1.createTransactionRequest()
+        createtransactionrequest.merchantAuthentication = merchantAuth
+        createtransactionrequest.refId = "MerchantID-0001"
+        createtransactionrequest.transactionRequest = transactionrequest
+        # Create the controller
+        createtransactioncontroller = createTransactionController(
+            createtransactionrequest)
+        createtransactioncontroller.execute()
+
+        response = createtransactioncontroller.getresponse()
+
+        if response is not None:
+            # Check to see if the API request was successfully received and acted upon
+            if response.messages.resultCode == "Ok":
+                # Since the API request was successful, look for a transaction response
+                # and parse it to display the results of authorizing the card
+                if hasattr(response.transactionResponse, 'messages') is True:
+                    print(
+                        'Successfully created transaction with Transaction ID: %s'
+                        % response.transactionResponse.transId)
+                    print('Transaction Response Code: %s' %
+                          response.transactionResponse.responseCode)
+                    print('Message Code: %s' %
+                          response.transactionResponse.messages.message[0].code)
+                    print('Description: %s' % response.transactionResponse.
+                          messages.message[0].description)
+                    return {'success': True, 'trans_id': response.transactionResponse.transId,
+                            'response_code': response.transactionResponse.responseCode,
+                            'message_code': response.transactionResponse.messages.message[0].code,
+                            'description': response.transactionResponse.messages.message[0].description}
+
+                else:
+                    print('Failed Transaction.')
+                    if hasattr(response.transactionResponse, 'errors') is True:
+                        print('Error Code:  %s' % str(response.transactionResponse.
+                                                      errors.error[0].errorCode))
+                        print(
+                            'Error message: %s' %
+                            response.transactionResponse.errors.error[0].errorText)
+                        return {'success': False, 'error_code': response.transactionResponse.errors.error[0].errorCode,
+                                'error_message': response.transactionResponse.errors.error[0].errorText}
+            # Or, print errors if the API request wasn't successful
+            else:
+                print('Failed Transaction.')
+                if hasattr(response, 'transactionResponse') is True and hasattr(
+                        response.transactionResponse, 'errors') is True:
+                    print('Error Code: %s' % str(
+                        response.transactionResponse.errors.error[0].errorCode))
+                    print('Error message: %s' %
+                          response.transactionResponse.errors.error[0].errorText)
+                    return {'success': False, 'error_code': response.transactionResponse.errors.error[0].errorCode,
+                            'error_message': response.transactionResponse.errors.error[0].errorText}
+
+                else:
+                    print('Error Code: %s' %
+                          response.messages.message[0]['code'].text)
+                    print('Error message: %s' %
+                          response.messages.message[0]['text'].text)
+                    return {'success': False, 'error_code': response.messages.message[0]['code'].text,
+                            'error_message': response.messages.message[0]['text'].text}
+        else:
+            print('Null Response.')
+            return {'success': False, 'error_code': None,
+                    'error_message': 'Null Response.'}
+
     def get(self, request):
         order = Order.objects.filter(user_id=request.user)
         and_condition = Q()
@@ -871,6 +999,7 @@ class OrderList(APIView, PaginationHandlerMixin):
         serializer = OrderRequestSerializer(data=request.data)
         if serializer.is_valid():
             invoice_serializer = InvoiceRequestCreateSerializer(data=request.data['invoice'], many=True)
+            card_serializer = CardInformationSerializer(data=request.data['card_information'])
             if invoice_serializer.is_valid():
                 total_price = 0
                 for item in request.data['invoice']:
@@ -899,7 +1028,7 @@ class OrderList(APIView, PaginationHandlerMixin):
                 invoice = invoice_serializer.save(order=order)
                 sender = 'sales@toranjestan.com'
                 send_mail('mail_templated/{}'.format('purchase.html'), {'order': order, 'invoice': invoice},
-                          sender,[order.user.email])
+                          sender, [order.user.email])
 
                 # Notification.objects.create(
                 #     user=invoice[0].product.supplier.user,
@@ -907,18 +1036,22 @@ class OrderList(APIView, PaginationHandlerMixin):
                 #         type_of_notification=NotificationType.NEW_ORDER),
                 #     link=BASE_URL + '/api/v1/market/order/supplier'
                 # )
+                if card_serializer.is_valid():
+                    payment_result = self.charge_credit_card(card_serializer.validated_data,
+                                                             invoice_serializer.validated_data, order.total_price,
+                                                             request.data['email'])
                 Transaction.objects.create(
                     owner=request.user,
                     order=order,
                     title='Buy',
-                    type= TransactionType.DEPOSIT.value,
-                    amount = order.total_price
+                    type=TransactionType.DEPOSIT.value,
+                    amount=order.total_price
                 )
                 return Response({
                     'success': True,
                     'message': "mission accomplished",
                     'data': OrderDetailSerializer(order, many=False).data
-                });
+                })
             else:
                 return Response({'success': False, 'message': 'Wrong data', 'errors': invoice_serializer.errors},
                                 status.HTTP_400_BAD_REQUEST)
@@ -1010,7 +1143,7 @@ class GetOrder(APIView):
         serializer = OrderDetailSerializer(order, many=False)
         return Response({'success': True, 'data': serializer.data, 'message': ''})
 
-    def put(self,request,pk):
+    def put(self, request, pk):
         if not request.user.is_staff:
             return Response(
                 {'success': False, 'message': 'User FORBIDDEN',
@@ -1031,7 +1164,7 @@ class GetOrderQr(APIView):
         serializer = OrderDetailSerializer(order, many=False)
         return Response({'success': True, 'data': serializer.data, 'message': ''})
 
-    def put(self,request,pk):
+    def put(self, request, pk):
         if not request.user.is_staff:
             return Response(
                 {'success': False, 'message': 'User FORBIDDEN',
