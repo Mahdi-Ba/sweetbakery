@@ -83,7 +83,6 @@ class ProductSupplierCreateSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
-
 class QuestionAndAnswerShowSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.first_name')
 
@@ -261,7 +260,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     is_locked = serializers.ReadOnlyField()
     qr_number = serializers.ReadOnlyField()
     state = serializers.IntegerField()
-    custom_address =  serializers.CharField(max_length=300, blank=True, default='')
+    custom_address =  serializers.CharField(max_length=256,allow_blank=True, default='')
     state_name = serializers.CharField(source='get_state_display')
 
     class Meta:
