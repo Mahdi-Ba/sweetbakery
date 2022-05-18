@@ -8,4 +8,5 @@ urlpatterns = [
     path('province/<int:pk>', views.ProvincesListByState.as_view(), name=None),
     path('location/<int:pk>', views.LocationListByProvince.as_view(), name=None),
     path('schaduling/<int:pk>', views.SchedulingListByLocation.as_view(), name=None),
+    path('schaduling/create_new_years', views.SchedulingScriptLocation.as_view(), name=None),
 ]
