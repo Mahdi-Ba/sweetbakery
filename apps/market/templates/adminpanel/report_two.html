@@ -2,9 +2,10 @@
 {% load i18n admin_urls static %}
 
 {% block content %}
-        <h1>Report Two </h1>
 
     <form action="" method="post">
+            <h1>Report Two </h1>
+
         {% csrf_token %}
         <input type="hidden" name="action" value="report_two"/>
         <div>
