@@ -1,0 +1,24 @@
+{% extends 'admin/base.html' %}
+{% load i18n admin_urls static %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="report_two"/>
+        <div>
+            <div>
+                start date : <input type="date" required name="date_time" id="date_time">
+                end date : <input type="date" required name="end_date_time" id="end_date_time">
+            </div>
+            <br>
+
+            <select style="display: none" name="{{ action_checkbox_name }}" multiple>
+                {% for item in form %}
+                    <option value="{{ item.id }}" selected></option>
+                {% endfor %}
+            </select>
+            <input type="submit" style="background-color: #2a9443" name="apply" value="{% trans 'Submit' %}"/>
+        </div>
+    </form>
+
+{% endblock %}

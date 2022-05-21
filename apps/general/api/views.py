@@ -45,28 +45,6 @@ class SchedulingListByLocation(APIView):
 @permission_classes((AllowAny,))
 class SchedulingScriptLocation(APIView):
     def get(self, request):
-        """
-        select mp.id as product_id,mp.name as product_name,sum(market_invoice.quantity) total,gl.title as location,gp.title as city
-             ,gs.deliver_date_time from market_invoice inner join market_order mo on mo.id = market_invoice.order_id
-        inner join general_scheduling gs on gs.id = mo.scheduling_id
-        inner join market_product mp on mp.id = market_invoice.product_id
-        inner join general_location gl on gl.id = gs.location_id
-        inner join general_province gp on gl.province_id = gp.id
-        group by product_id,location
-        """
-
-
-
-        """
-        select mp.id as product_id,mp.name as product_name,sum(market_invoice.quantity) total
-             ,gs.deliver_date_time from market_invoice inner join market_order mo on mo.id = market_invoice.order_id
-        inner join general_scheduling gs on gs.id = mo.scheduling_id
-        inner join market_product mp on mp.id = market_invoice.product_id
-        inner join general_location gl on gl.id = gs.location_id
-        inner join general_province gp on gl.province_id = gp.id
-        group by product_id,name
-        
-        """
         from datetime import datetime, timedelta
         schedulings = Scheduling.objects.all()
         for item in schedulings:
