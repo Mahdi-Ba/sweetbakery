@@ -252,13 +252,13 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
             with connection.cursor() as cursor:
                 cursor.execute("""
         select mp.id as product_id,mp.name as product_name,sum(market_invoice.quantity) total,gl.title as location,gp.title as city
-             ,gs.deliver_date_time from market_invoice inner join market_order mo on mo.id = market_invoice.order_id
+             ,gs.deliver_date_time,gl.id from market_invoice inner join market_order mo on mo.id = market_invoice.order_id
                 inner join general_scheduling gs on gs.id = mo.scheduling_id
                 inner join market_product mp on mp.id = market_invoice.product_id
                 inner join general_location gl on gl.id = gs.location_id
                 inner join general_province gp on gl.province_id = gp.id
                 where deliver_date_time >  %s and deliver_date_time <  %s
-                group by product_id,location
+                group by mp.id,gl.id
                     """, [request.POST['date_time'], request.POST['end_date_time']])
                 rows = cursor.fetchall()
 
@@ -313,7 +313,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
                     inner join general_location gl on gl.id = gs.location_id
                     inner join general_province gp on gl.province_id = gp.id
                     where deliver_date_time >  %s and deliver_date_time <  %s
-                    group by product_id,name
+                    group by mp.id
                     """, [request.POST['date_time'], request.POST['end_date_time']])
                 rows = cursor.fetchall()
 
