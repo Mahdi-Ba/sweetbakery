@@ -263,7 +263,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
                 rows = cursor.fetchall()
 
             response = HttpResponse(content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename="investor.xls"'
+            response['Content-Disposition'] = 'attachment; filename="report_one.xls"'
             wb = xlwt.Workbook(encoding='utf-8')
             ws = wb.add_sheet('tax')
             row_num = 0
@@ -319,7 +319,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
 
 
             response = HttpResponse(content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename="investor.xls"'
+            response['Content-Disposition'] = 'attachment; filename="report_two.xls"'
             wb = xlwt.Workbook(encoding='utf-8')
             ws = wb.add_sheet('tax')
             row_num = 0
