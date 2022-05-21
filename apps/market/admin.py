@@ -258,7 +258,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
                 inner join general_location gl on gl.id = gs.location_id
                 inner join general_province gp on gl.province_id = gp.id
                 where deliver_date_time >  %s and deliver_date_time <  %s
-                group by mp.id,gl.id
+                group by mp.id,gl.id,gp.title, gs.deliver_date_time
                     """, [request.POST['date_time'], request.POST['end_date_time']])
                 rows = cursor.fetchall()
 
@@ -313,7 +313,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
                     inner join general_location gl on gl.id = gs.location_id
                     inner join general_province gp on gl.province_id = gp.id
                     where deliver_date_time >  %s and deliver_date_time <  %s
-                    group by mp.id
+                    group by mp.id,gs.deliver_date_time
                     """, [request.POST['date_time'], request.POST['end_date_time']])
                 rows = cursor.fetchall()
 
