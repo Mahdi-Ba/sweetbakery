@@ -50,6 +50,7 @@ class ProductTypeSerializer(serializers.ModelSerializer):
 
 class SubCategorySerializer(serializers.ModelSerializer):
     category_title = serializers.CharField(read_only=True, source='category.name')
+    category_fee = serializers.CharField(read_only=True, source='category.fee')
 
     class Meta:
         model = SubCategory

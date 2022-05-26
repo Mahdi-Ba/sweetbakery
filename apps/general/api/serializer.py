@@ -7,7 +7,7 @@ class StateSerializer(serializers.ModelSerializer):
     class Meta:
         model = State
         fields = [
-            'id', 'title'
+            'id', 'title','shipping_cost'
         ]
 
 

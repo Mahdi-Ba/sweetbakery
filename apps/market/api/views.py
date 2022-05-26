@@ -890,12 +890,12 @@ class OrderList(APIView, PaginationHandlerMixin):
         # line_items = apicontractsv1.ArrayOfLineItem()
         # for item in products:
         #     line_item = apicontractsv1.lineItemType()
-            # line_item.itemId = item.get('product').id
-            # line_item.name = item.get('product').name
-            # line_item.description = item.get('product').description
-            # line_item.quantity = item.get('quantity')
-            # line_item.unitPrice = item.get('price')
-            # line_items.lineItem.append(line_item)
+        # line_item.itemId = item.get('product').id
+        # line_item.name = item.get('product').name
+        # line_item.description = item.get('product').description
+        # line_item.quantity = item.get('quantity')
+        # line_item.unitPrice = item.get('price')
+        # line_items.lineItem.append(line_item)
         # Create a transactionRequestType object and add the previous objects to it.
         transactionrequest = apicontractsv1.transactionRequestType()
         transactionrequest.transactionType = "authCaptureTransaction"
@@ -1003,15 +1003,17 @@ class OrderList(APIView, PaginationHandlerMixin):
             if invoice_serializer.is_valid():
                 total_price = 0
                 for item in request.data['invoice']:
-                    total_discount = 0
+                    total_discount, fee = 0, 0
                     product = Product.objects.get(id=item['product'])
+                    if product.sub_category.category.fee != 0:
+                        fee = Product.objects.first().sub_category.category.fee * Product.objects.first().price
                     if product.extra_discount:
                         total_discount += product.extra_discount_percent
                     discount = Discount.objects.filter(product_id=item['product'], lower_bound__lte=item['quantity'],
                                                        upper_bound__gte=item['quantity']).first()
                     if discount is not None:
                         total_discount += discount.percent
-                    item['price'] = round(product.price * (1 - total_discount / 100), 2)
+                    item['price'] = round(product.price * (1 - total_discount / 100), 2) + fee
                     total_price += item['price'] * item['quantity']
                     if not product.unlimited:
                         if product.quantity < item['quantity']:

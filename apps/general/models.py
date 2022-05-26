@@ -3,6 +3,8 @@ from django.db import models
 
 class State(models.Model):
     title = models.CharField(unique=True, max_length=32, null=False)
+    shipping_cost = models.FloatField(blank=True, null=True, default=0)
+
 
     def __str__(self):
         return self.title
