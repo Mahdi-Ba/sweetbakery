@@ -37,4 +37,5 @@ class Scheduling(models.Model):
     is_enable = models.BooleanField(default=True)
 
     def __str__(self):
-        return f'time is {self.deliver_date_time} - location address in {self.location.address}' 
+        return f'time is {self.deliver_date_time} - location address in {self.location.address}' \
+               f' ,this province {self.location.province}'

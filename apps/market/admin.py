@@ -215,12 +215,23 @@ class OrderResource(resources.ModelResource):
 
         return product
 
+@admin.register(Invoice)
+class InvoiceAdmin( admin.ModelAdmin):
+    list_display = [
+        'product',
+        'order',
+        'quantity',
+        'price',
+    ]
+    search_fields = ['order__id']
+
+
 
 @admin.register(Order)
 class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = OrderResource
     actions = ['report_one', 'report_two']
-    inlines = [InvoiceModel]
+    # inlines = [InvoiceModel]
     list_display = [
         'user',
         'mobile',
