@@ -23,7 +23,7 @@ class Location(models.Model):
     address = models.TextField()
     lat = models.CharField(max_length=255, null=True, blank=True)
     lng = models.CharField(max_length=255, null=True, blank=True)
-    province = models.ForeignKey(Province, null=True, on_delete=models.SET_NULL)
+    province = models.ForeignKey(Province, null=True, on_delete=models.SET_NULL,db_index=True)
     is_individual = models.BooleanField(default=False)
 
     def __str__(self):
@@ -31,9 +31,9 @@ class Location(models.Model):
 
 
 class Scheduling(models.Model):
-    deliver_date_time = models.DateTimeField()
+    deliver_date_time = models.DateTimeField(db_index=True)
     deliver_end_date_time = models.DateTimeField()
-    location = models.ForeignKey(Location, null=True, on_delete=models.SET_NULL)
+    location = models.ForeignKey(Location, null=True, on_delete=models.SET_NULL,db_index=True)
     is_enable = models.BooleanField(default=True)
 
     def __str__(self):
