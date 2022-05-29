@@ -172,6 +172,7 @@ class OrderStatus(models.IntegerChoices):
 class Order(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     scheduling = models.ForeignKey(Scheduling, null=True, on_delete=models.CASCADE)
+    shipping_cost = models.FloatField(null=True,blank=True)
     qr_number = models.UUIDField(default=uuid.uuid4, editable=False)
     custom_address = models.TextField(max_length=1024, blank=True,null=True)
     total_price = models.FloatField()

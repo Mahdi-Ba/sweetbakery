@@ -304,6 +304,7 @@ class CardInformationSerializer(serializers.Serializer):
 
 class OrderRequestSerializer(serializers.ModelSerializer):
     total_price = serializers.ReadOnlyField()
+    shipping_cost = serializers.ReadOnlyField()
     user = serializers.ReadOnlyField(source='user.mobile')
 
     class Meta:

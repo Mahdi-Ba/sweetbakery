@@ -1023,7 +1023,11 @@ class OrderList(APIView, PaginationHandlerMixin):
                         else:
                             product.quantity -= item['quantity']
                             product.save()
-                order = serializer.save(total_price=round(total_price, 2), user=request.user)
+                shipping_cost = Scheduling.objects.get(
+                    id=request.data['scheduling']).location.province.state.shipping_cost
+                total_price += shipping_cost
+                order = serializer.save(total_price=round(total_price, 2), shipping_cost=shipping_cost,
+                                        user=request.user)
                 """re again serilize becouse change price"""
                 invoice_serializer = InvoiceRequestCreateSerializer(data=request.data['invoice'], many=True)
                 invoice_serializer.is_valid()
