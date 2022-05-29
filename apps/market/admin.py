@@ -231,7 +231,7 @@ class InvoiceAdmin( admin.ModelAdmin):
 class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = OrderResource
     actions = ['report_one', 'report_two']
-    # inlines = [InvoiceModel]
+    inlines = [InvoiceModel]
     list_display = [
         'user',
         'mobile',
