@@ -249,6 +249,7 @@ class OrderAdmin(ExportActionMixin, admin.ModelAdmin):
                    'scheduling__location__province',
                    ['scheduling__deliver_date_time', DateTimeRangeFilter],
                    ]
+    readonly_fields = ('scheduling')
 
     def mobile(self, instance):
         return instance.user.mobile
